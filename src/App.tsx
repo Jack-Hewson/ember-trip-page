@@ -1,69 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
-import './App.css'
-import axios from 'axios'
+import { useEffect, useRef, useState } from 'react'
+import './App.css';
 import CurrentTimeline from './CurrentTimeline';
-import { Box, Grid } from '@mui/material';
+import { Box, Button, Grid } from '@mui/material';
 import MapContainer from './map/MapContainer';
+import { calculateNearestTime } from './TimeHelper';
+import { requestQuotes, requestRoutes } from './api/ApiHelper';
 
 function App() {
     const [quotes, setQuotes] = useState<any>();
     const [route, setRoute] = useState<any>();
+    const currentRoute = useRef<number>(null);
 
     useEffect(() => {
-        const todaysDate = new Date()
-        const startTime = new Date(todaysDate.setHours(0, 0, 0)).toISOString();
-        const endTime = new Date(todaysDate.setHours(23, 59, 59)).toISOString();
-        console.log(startTime)
-        console.log(endTime)
-        axios.get(`https://api.ember.to/v1/quotes/?origin=13&destination=42&departure_date_from=${startTime}&departure_date_to=${endTime}`)
-            .then(response => {
-                setQuotes(response.data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        requestQuotes(setQuotes)
     }, []);
 
     useEffect(() => {
         if (quotes) {
-            axios.get(`https://api.ember.to/v1/trips/${quotes.quotes[20].legs[0].trip_uid}`)
-                .then(response => {
-                    setRoute(response.data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-            //   quotes.quotes.forEach((quote) => {
-            //     axios.get(`https://api.ember.to/v1/trips/${quote.legs[0].trip_uid}`)
-            //       .then(response => {
-            //         console.log(response.data)
-            //         // setQuotes(response.data);
-            //       })
-            //       .catch(error => {
-            //         console.error(error);
-            //       });
-            //   })
-
+            // by default, the timeline displays the route with the nearest starting stop's departure time
+            const nearestTime = calculateNearestTime(quotes)
+            requestRoutes(quotes, nearestTime, currentRoute, setRoute)
         }
     }, [quotes])
-
-    // useEffect(() => {
-    //     console.log(route)
-    //     if (quotes) {
-    //         console.log(quotes)
-    //         console.log(quotes.quotes)
-    //         quotes.quotes.forEach((q) => {
-    //             console.log(q.legs[0].description.destination_board)
-    //         })
-    //     }
-    // })
 
     return (
         <Box sx={{ width: '100%', flexGrow: 1 }}>
             <Grid container spacing={2}>
                 <Grid item xs={3} sx={{ height: '100vh', overflow: 'auto' }}>
-                    <CurrentTimeline route={route} />
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} >
+                            <Button onClick={() => {
+                                requestRoutes(quotes, currentRoute!.current - 1, currentRoute, setRoute)
+                            }}>-</Button>
+                        </Grid>
+                        <Grid item xs={6} >
+                            <Button onClick={() => {
+                                requestRoutes(quotes, currentRoute!.current + 1, currentRoute, setRoute)
+                            }}>+</Button>
+                        </Grid>
+                        <CurrentTimeline route={route} />
+                    </Grid>
                 </Grid>
                 <Grid item xs={9}>
                     <MapContainer route={route} />
