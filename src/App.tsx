@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css';
 import CurrentTimeline from './CurrentTimeline';
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import MapContainer from './map/MapContainer';
 import { calculateNearestTime } from './TimeHelper';
 import { requestQuotes, requestRoutes } from './api/ApiHelper';
@@ -28,6 +28,14 @@ function App() {
         <Box sx={{ width: '100%', flexGrow: 1 }}>
             <Grid container spacing={2}>
                 <Grid item xs={3} sx={{ height: '100vh', overflow: 'auto' }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={3} >
+                            <Typography>{route?.description?.route_number}</Typography>
+                        </Grid>
+                        <Grid item xs={9} >
+                            <Typography> Facilities: Toilets - {route?.vehicle?.has_toilet}</Typography>
+                        </Grid>
+                    </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={6} >
                             <Button onClick={() => {

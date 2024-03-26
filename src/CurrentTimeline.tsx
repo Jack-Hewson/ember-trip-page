@@ -11,7 +11,9 @@ export default function CurrentTimeline(route: any) {
     return (
         (route?.route?.route.map((stop) =>
             <Timeline position="alternate">
-                <TimelineItem>
+                <TimelineItem onClick={() => {
+                    console.log(stop)
+                }}>
                     <TimelineOppositeContent>
                         {stop.location.name}  <br />
                         {stop.location.name !== stop.location.detailed_name && stop.location.detailed_name}

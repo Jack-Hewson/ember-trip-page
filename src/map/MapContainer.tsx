@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import mapboxgl from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
-import { addLiveRouteLineLayer, addRouteLineLayer, addRouteMarkerLayer } from "./MapHelper";
+import { addLiveBusMarkerLayer, addLiveRouteLineLayer, addRouteLineLayer, addRouteMarkerLayer } from "./MapHelper";
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoiamhld3NvbiIsImEiOiJjbHU1b2RqMTIwaDNhMmxudjJ4cWk3NGV2In0.73E5eCnVMUhvb2d1nUqOEA';
@@ -38,14 +38,15 @@ const MapContainer = (route: any) => {
             addRouteLineLayer(map, route);
             addLiveRouteLineLayer(map, route);
             addRouteMarkerLayer(map, route);
+            addLiveBusMarkerLayer(map, route);
         }
     }, [route])
 
     return (
         <Box sx={{ height: '100%' }}>
-            <Box className="sidebar">
+            {/* <Box className="sidebar">
                 Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-            </Box>
+            </Box> */}
             <Box sx={{ height: '100vh' }} ref={mapContainer} className="map-container" />
         </Box>
     );
