@@ -40,8 +40,9 @@ export const addLiveRouteLineLayer = (map: mapboxgl.Map, route: any) => {
     if (map.getSource('liveRoute')) {
         map.removeSource('liveRoute');
     }
-    let stopADep: string | null = null;
-    let stopBArr: string | null = null;
+
+    let stopADeparture: string | null = null;
+    let stopBArrival: string | null = null;
     let prevStop: [number, number] = [0, 0];
 
     const liveCoords = route?.route?.route
@@ -49,22 +50,22 @@ export const addLiveRouteLineLayer = (map: mapboxgl.Map, route: any) => {
             const departure = r.departure?.actual || r.departure?.estimated || r.departure?.scheduled;
             const arrival = r.arrival?.actual || r.arrival?.estimated || r.arrival?.scheduled;
 
-            if (!stopBArr) {
-                stopADep = departure;
-                stopBArr = arrival;
+            if (!stopBArrival) {
+                stopADeparture = departure;
+                stopBArrival = arrival;
                 prevStop = [r.location.lon, r.location.lat];
             } else {
-                stopBArr = arrival;
+                stopBArrival = arrival;
                 const currentTime = new Date();
 
                 // Check if the current time is between the start and end times
-                if (currentTime >= new Date(stopADep!) && currentTime <= new Date(stopBArr!)) {
-                    stopADep = departure;
+                if (currentTime >= new Date(stopADeparture!) && currentTime <= new Date(stopBArrival!)) {
+                    stopADeparture = departure;
                     return [[prevStop[0], prevStop[1]], [r.location.lon, r.location.lat]];
                 }
 
                 prevStop = [r.location.lon, r.location.lat];
-                stopADep = departure;
+                stopADeparture = departure;
             }
         })
         .filter(function (r) {
@@ -98,6 +99,73 @@ export const addLiveRouteLineLayer = (map: mapboxgl.Map, route: any) => {
             'line-width': 8
         }
     })
+}
+
+export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, route: any) => {
+    if (map.getLayer('liveBus')) {
+        map.removeLayer('liveBus');
+    }
+    if (map.getSource('liveBus')) {
+        map.removeSource('liveBus');
+    }
+
+    map.addSource('liveBus', {
+        'type': 'geojson',
+        'data': {
+            'type': 'FeatureCollection',
+            'features': [{
+                'type': 'Feature',
+                'properties': {
+                    'description': `Bus location </br> Last updated: ${new Date(route?.route?.vehicle.gps.last_updated)}`
+                },
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [route?.route.vehicle.gps.longitude, route?.route.vehicle.gps.latitude]
+                }
+            }]
+        }
+    });
+    map.addLayer({
+        'id': 'liveBus',
+        'type': 'circle',
+        'source': 'liveBus',
+        'paint': {
+            'circle-color': '#00ff00',
+            'circle-radius': 6,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff'
+        }
+    });
+
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'liveBus', (e) => {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        // Copy coordinates array.
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = e.features[0].properties.description;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+    });
+
+    map.on('mouseleave', 'liveBus', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
 }
 
 export const addRouteMarkerLayer = (map: mapboxgl.Map, route: any) => {
