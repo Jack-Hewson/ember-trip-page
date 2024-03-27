@@ -24,14 +24,14 @@ export default function CurrentTimeline(route: any) {
                     <TimelineContent>
                         <Stack direction="row" spacing={1}>
                             <Typography>Arrival:</Typography>
-                            <Grid container columnGap={3}>
-                                <Grid item lg={3} xs={12}>
+                            <Grid container columnGap={5}>
+                                <Grid item xl={4} lg={12}>
                                     <Typography sx={{ textDecoration: stop.arrival.actual ? "line-through" : "" }}>
                                         {convertToTime(stop.arrival.scheduled)}
                                     </Typography>
                                 </Grid>
 
-                                <Grid item lg={3} xs={12}>
+                                <Grid item xl={4} lg={12}>
                                     {stop.arrival.actual && stop.arrival.actual !== stop.arrival.scheduled && <Typography color="error"> {convertToTime(stop.arrival.actual)}</Typography>}
                                 </Grid>
                             </Grid>
@@ -39,14 +39,14 @@ export default function CurrentTimeline(route: any) {
 
                         <Stack direction="row" spacing={1}>
                             <Typography>Departure:</Typography>
-                            <Grid container columnGap={3}>
-                                <Grid item lg={3} xs={12}>
+                            <Grid container columnGap={5}>
+                                <Grid item xl={4} lg={12}>
                                     <Typography sx={{ textDecoration: stop.departure.actual ? "line-through" : "" }}>
                                         {convertToTime(stop.departure.scheduled)}
                                     </Typography>
                                 </Grid>
 
-                                <Grid item lg={3} xs={12}>
+                                <Grid item xl={4} lg={12}>
                                     {stop.departure.actual && stop.departure.actual !== stop.departure.scheduled && <Typography color="error"> {convertToTime(stop.departure.actual)}</Typography>}
                                 </Grid>
                             </Grid>
@@ -54,7 +54,6 @@ export default function CurrentTimeline(route: any) {
                     </TimelineContent>
                 </TimelineItem>
             </Timeline>
-        )
-        )
+        ))
     );
 }

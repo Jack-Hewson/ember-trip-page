@@ -14,6 +14,7 @@ import RouteDetailsComponent from './sidebar/RouteDetailsComponent';
 import MobileNavigationButton from './navigation/MobileNavigationButton';
 import TimelineButton from './navigation/TimelineButton';
 import Divider from '@mui/material/Divider';
+import LoadingSpinner from './commonComponents/LoadingSpinner';
 
 function App() {
     const [quotes, setQuotes] = useState<any>();
@@ -52,37 +53,43 @@ function App() {
                 <img src="src/images/ember_logo.PNG" width="32" height="32" alt="ember_logo" />
             </IconButton>
             <Grid container spacing={2}>
-                <Grid item lg={3} xs={12} sx={{ height: '100%' }}>
-                    <Grid container sx={{ padding: '2rem', height: '20vh', position: 'relative', zIndex: 100 }} spacing={0}>
-                        <Grid item lg={5} xs={3} >
-                            <RouteDetailsComponent details={quotes?.quotes[currentRoute.current]?.legs[0]} />
-                        </Grid>
-                        <Grid item lg={7} xs={9}  >
-                            <Grid container spacing={2}>
-                                <Grid item lg={12} xs={6} >
-                                    <FacilitiesComponent vehicle={route?.vehicle} />
-                                </Grid>
-                                <Grid item lg={12} xs={6} >
-                                    <CapacityComponent vehicle={quotes?.quotes[currentRoute.current]?.availability} />
-                                </Grid>
-                                <Grid item xs={5} >
-                                    <StatusComponent description={route?.description} />
-                                </Grid>
-                                <Grid item xs={7} >
-                                    <PurchaseComponent />
-                                </Grid>
+                <Grid item lg={3} xs={12} sx={{ height: '100%', position: 'relative' }}>
 
+                    {quotes ? // show loading spinner if quotes aren't ready yet
+                        <Grid container sx={{ padding: '2rem', height: '20vh', position: 'relative', zIndex: 100 }} spacing={0}>
+                            <Grid item lg={5} xs={3} >
+                                <RouteDetailsComponent details={quotes?.quotes[currentRoute.current]?.legs[0]} />
                             </Grid>
+                            <Grid item lg={7} xs={9}  >
+                                <Grid container spacing={2}>
+                                    <Grid item lg={12} xs={6} >
+                                        <FacilitiesComponent vehicle={route?.vehicle} />
+                                    </Grid>
+                                    <Grid item lg={12} xs={6} >
+                                        <CapacityComponent vehicle={quotes?.quotes[currentRoute.current]?.availability} />
+                                    </Grid>
+                                    <Grid item xs={5} >
+                                        <StatusComponent description={route?.description} />
+                                    </Grid>
+                                    <Grid item xs={7} >
+                                        <PurchaseComponent />
+                                    </Grid>
+
+                                </Grid>
+                            </Grid>
+                            <ButtonGroup fullWidth>
+                                <Grid item xs={6} >
+                                    <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={false} />
+                                </Grid>
+                                <Grid item xs={6} >
+                                    <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={true} />
+                                </Grid>
+                            </ButtonGroup>
                         </Grid>
-                        <ButtonGroup fullWidth>
-                            <Grid item xs={6} >
-                                <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={false} />
-                            </Grid>
-                            <Grid item xs={6} >
-                                <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={true} />
-                            </Grid>
-                        </ButtonGroup>
-                    </Grid>
+                        :
+                        <LoadingSpinner />
+                    }
+
                     <Divider />
                     <Box sx={{ height: '80vh', overflowY: 'auto', overflowX: 'hidden' }}>
                         <CurrentTimeline route={route} />
