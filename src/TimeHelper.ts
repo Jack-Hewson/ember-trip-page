@@ -40,3 +40,12 @@ export const getEndTime = () => {
     const todaysDate = new Date()
     return new Date(todaysDate.setHours(23, 59, 59)).toISOString();
 }
+
+export const getGapInMinutes = (time) => {
+    const currentDate = new Date();
+    // Calculate the difference in milliseconds between the current date and the target date
+    const differenceInMilliseconds = currentDate.getTime() - time.getTime();
+    // Convert milliseconds to minutes
+    const minutes = Math.floor(differenceInMilliseconds / (1000 * 60))
+    return `${minutes === 0 ? 'Just now' : minutes + ' minute/s ago'}`;
+}

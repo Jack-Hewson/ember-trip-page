@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 
 const PurchaseComponent = () => {
     return (
-        <Button color="primary" href="https://www.ember.to/" target="_blank">Purchase Tickets </Button>
+        <Button variant='outlined' color="primary" href="https://www.ember.to/" target="_blank">Purchase Tickets </Button>
     )
 }
 

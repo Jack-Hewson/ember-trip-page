@@ -1,8 +1,9 @@
 import mapboxgl from "mapbox-gl";
 import "./map.css"
+import { getGapInMinutes } from "../TimeHelper";
 
 export const addRouteLineLayer = (map: mapboxgl.Map, route: any) => {
-    if (map.getLayer("route")) return;
+    if (map?.getLayer("route")) return;
 
     map.addSource('route', {
         'type': 'geojson',
@@ -33,109 +34,51 @@ export const addRouteLineLayer = (map: mapboxgl.Map, route: any) => {
     })
 }
 
-export const addLiveRouteLineLayer = (map: mapboxgl.Map, route: any) => {
-    if (map.getLayer('liveRoute')) {
-        map.removeLayer('liveRoute');
-    }
-    if (map.getSource('liveRoute')) {
-        map.removeSource('liveRoute');
-    }
-
-    let stopADeparture: string | null = null;
-    let stopBArrival: string | null = null;
-    let prevStop: [number, number] = [0, 0];
-
-    const liveCoords = route?.route?.route
-        .map((r) => {
-            const departure = r.departure?.actual || r.departure?.estimated || r.departure?.scheduled;
-            const arrival = r.arrival?.actual || r.arrival?.estimated || r.arrival?.scheduled;
-
-            if (!stopBArrival) {
-                stopADeparture = departure;
-                stopBArrival = arrival;
-                prevStop = [r.location.lon, r.location.lat];
-            } else {
-                stopBArrival = arrival;
-                const currentTime = new Date();
-
-                // Check if the current time is between the start and end times
-                if (currentTime >= new Date(stopADeparture!) && currentTime <= new Date(stopBArrival!)) {
-                    stopADeparture = departure;
-                    return [[prevStop[0], prevStop[1]], [r.location.lon, r.location.lat]];
-                }
-
-                prevStop = [r.location.lon, r.location.lat];
-                stopADeparture = departure;
-            }
-        })
-        .filter(function (r) {
-            return r !== undefined;
-        }) as Array<[[number, number], [number, number]]>;
-
-
-
-    map.addSource('liveRoute', {
-        'type': 'geojson',
-        'data': {
-            'type': 'Feature',
-            'properties': {},
-            'geometry': {
-                'type': 'LineString',
-                'coordinates': liveCoords[0]
-            },
-        }
-    });
-
-    map.addLayer({
-        id: 'liveRoute',
-        type: 'line',
-        source: 'liveRoute',
-        layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        paint: {
-            'line-color': '#ff00ff',
-            'line-width': 8
-        }
-    })
-}
-
 export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, route: any) => {
-    if (map.getLayer('liveBus')) {
-        map.removeLayer('liveBus');
-    }
-    if (map.getSource('liveBus')) {
-        map.removeSource('liveBus');
+    const geojson = {
+        'type': 'FeatureCollection',
+        'features': [{
+            'type': 'Feature',
+            'properties': {
+                "rotation": route?.route.vehicle.gps.heading,
+                'description': `<b>Bus location</b> </br> Last updated: ${getGapInMinutes(new Date(route?.route?.vehicle.gps.last_updated))}`
+            },
+            'geometry': {
+                'type': 'Point',
+                'coordinates': [route?.route.vehicle.gps.longitude, route?.route.vehicle.gps.latitude]
+            }
+        }]
     }
 
-    map.addSource('liveBus', {
-        'type': 'geojson',
-        'data': {
-            'type': 'FeatureCollection',
-            'features': [{
-                'type': 'Feature',
-                'properties': {
-                    'description': `Bus location </br> Last updated: ${new Date(route?.route?.vehicle.gps.last_updated)}`
-                },
-                'geometry': {
-                    'type': 'Point',
-                    'coordinates': [route?.route.vehicle.gps.longitude, route?.route.vehicle.gps.latitude]
+
+    if (map.getSource('liveBus')) {
+        map.getSource('liveBus').setData(geojson);
+        return;
+    }
+
+    map.loadImage(
+        "src/images/bus.png",
+        (error, image) => {
+            if (error) throw error;
+
+            // Add the image to the map style.
+            map.addImage('busImage', image);
+
+            map.addSource('liveBus', {
+                'type': 'geojson',
+                'data': geojson
+            });
+            map.addLayer({
+                'id': 'liveBus',
+                'type': 'symbol',
+                'source': 'liveBus',
+                'layout': {
+                    'icon-image': 'busImage',
+                    'icon-size': 0.075,
+                    'icon-rotate': ['get', 'rotation']
                 }
-            }]
-        }
-    });
-    map.addLayer({
-        'id': 'liveBus',
-        'type': 'circle',
-        'source': 'liveBus',
-        'paint': {
-            'circle-color': '#00ff00',
-            'circle-radius': 6,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff'
-        }
-    });
+            });
+        });
 
     const popup = new mapboxgl.Popup({
         closeButton: false,
@@ -170,6 +113,7 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, route: any) => {
 
 export const addRouteMarkerLayer = (map: mapboxgl.Map, route: any) => {
     if (map.getLayer("places")) return;
+
     map.addSource('places', {
         'type': 'geojson',
         'data': {

@@ -1,12 +1,13 @@
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip } from "@mui/material";
 import WcIcon from '@mui/icons-material/Wc';
 import WifiIcon from '@mui/icons-material/Wifi';
 import WifiOffTwoToneIcon from '@mui/icons-material/WifiOffTwoTone';
+import DesktopTypography from "../commonComponents/DesktopTypography";
 
 const FacilitiesComponent = (route) => {
     return (
         <Stack direction="row" spacing={2}>
-            <Typography>Facilities:</Typography>
+            <DesktopTypography text="Facilities" />
             {route?.vehicle?.has_toilet ?
                 <Tooltip title="Toilets Available">
                     <WcIcon />

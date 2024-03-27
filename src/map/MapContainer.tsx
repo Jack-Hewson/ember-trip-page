@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import mapboxgl from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
-import { addLiveBusMarkerLayer, addLiveRouteLineLayer, addRouteLineLayer, addRouteMarkerLayer } from "./MapHelper";
+import { addLiveBusMarkerLayer, addRouteLineLayer, addRouteMarkerLayer } from "./MapHelper";
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MobileNavigationButton from "../navigation/MobileNavigationButton";
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoiamhld3NvbiIsImEiOiJjbHU1b2RqMTIwaDNhMmxudjJ4cWk3NGV2In0.73E5eCnVMUhvb2d1nUqOEA';
 
@@ -34,9 +35,8 @@ const MapContainer = (route: any) => {
     }, []);
 
     useEffect(() => {
-        if (route?.route?.route) {
+        if (route?.route?.route && map) {
             addRouteLineLayer(map, route);
-            addLiveRouteLineLayer(map, route);
             addRouteMarkerLayer(map, route);
             addLiveBusMarkerLayer(map, route);
         }
@@ -44,10 +44,9 @@ const MapContainer = (route: any) => {
 
     return (
         <Box sx={{ height: '100%' }}>
-            {/* <Box className="sidebar">
-                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-            </Box> */}
-            <Box sx={{ height: '100vh' }} ref={mapContainer} className="map-container" />
+            <Box sx={{ height: '100vh' }} ref={mapContainer} className="map-container" >
+                <MobileNavigationButton toMap={false} />
+            </Box>
         </Box>
     );
 

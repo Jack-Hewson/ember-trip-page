@@ -23,14 +23,3 @@ export const requestRoutes = (quotes, nearestTime, currentRoute, setRoute) => {
             requestRoutes(quotes, currentRoute.current, currentRoute, setRoute)
         });
 }
-
-
-
-
-// axios.get(`https://api.ember.to/v1/quotes/?origin=13&destination=42&departure_date_from=${startTime}&departure_date_to=${endTime}`)
-//     .then(response => {
-//         setQuotes(response.data);
-//     })
-//     .catch(error => {
-//         console.error(error);
-//     });

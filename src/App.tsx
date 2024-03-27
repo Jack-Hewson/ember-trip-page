@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react'
 import './App.css';
-import CurrentTimeline from './CurrentTimeline';
-import { Box, Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import CurrentTimeline from './sidebar/CurrentTimeline';
+import { Box, ButtonGroup, Grid, IconButton } from '@mui/material';
 import MapContainer from './map/MapContainer';
 import { calculateNearestTime } from './TimeHelper';
 import { requestQuotes, requestRoutes } from './api/ApiHelper';
@@ -11,6 +11,9 @@ import CapacityComponent from './sidebar/CapacityComponent';
 import StatusComponent from './sidebar/StatusComponent';
 import PurchaseComponent from './sidebar/PurchaseComponent';
 import RouteDetailsComponent from './sidebar/RouteDetailsComponent';
+import MobileNavigationButton from './navigation/MobileNavigationButton';
+import TimelineButton from './navigation/TimelineButton';
+import Divider from '@mui/material/Divider';
 
 function App() {
     const [quotes, setQuotes] = useState<any>();
@@ -26,10 +29,17 @@ function App() {
             // by default, the timeline displays the route with the nearest starting stop's departure time
             const nearestTime = calculateNearestTime(quotes)
             requestRoutes(quotes, nearestTime, currentRoute, setRoute)
+
+            // requests the route data every second for live gps location
+            const interval = setInterval(() => requestRoutes(quotes, currentRoute!.current, currentRoute, setRoute), 1000)
+            return () => {
+                clearInterval(interval);
+            }
         }
     }, [quotes])
+
     return (
-        <Box sx={{ width: '100%', flexGrow: 1 }}>
+        <Box sx={{ width: '100%', flexGrow: 1, overflow: 'hidden' }}>
             <IconButton
                 href="https://www.ember.to/" target="_blank"
                 sx={{
@@ -42,42 +52,50 @@ function App() {
                 <img src="src/images/ember_logo.PNG" width="32" height="32" alt="ember_logo" />
             </IconButton>
             <Grid container spacing={2}>
-                <Grid item xs={3} sx={{ height: '100vh', overflow: 'auto' }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={5} >
+                <Grid item lg={3} xs={12} sx={{ height: '100%' }}>
+                    <Grid container sx={{ padding: '2rem', height: '20vh', position: 'relative', zIndex: 100 }} spacing={0}>
+                        <Grid item lg={5} xs={3} >
                             <RouteDetailsComponent details={quotes?.quotes[currentRoute.current]?.legs[0]} />
-                            {/* <Typography>{route?.description?.route_number}</Typography> */}
                         </Grid>
-                        <Grid item xs={7} >
-                            <Stack spacing={1}>
-                                <FacilitiesComponent vehicle={route?.vehicle} />
-                                <CapacityComponent vehicle={quotes?.quotes[currentRoute.current]?.availability} />
-                                <StatusComponent description={route?.description} />
-                                <PurchaseComponent />
-                            </Stack>
+                        <Grid item lg={7} xs={9}  >
+                            <Grid container spacing={2}>
+                                <Grid item lg={12} xs={6} >
+                                    <FacilitiesComponent vehicle={route?.vehicle} />
+                                </Grid>
+                                <Grid item lg={12} xs={6} >
+                                    <CapacityComponent vehicle={quotes?.quotes[currentRoute.current]?.availability} />
+                                </Grid>
+                                <Grid item xs={5} >
+                                    <StatusComponent description={route?.description} />
+                                </Grid>
+                                <Grid item xs={7} >
+                                    <PurchaseComponent />
+                                </Grid>
 
+                            </Grid>
                         </Grid>
+                        <ButtonGroup fullWidth>
+                            <Grid item xs={6} >
+                                <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={false} />
+                            </Grid>
+                            <Grid item xs={6} >
+                                <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={true} />
+                            </Grid>
+                        </ButtonGroup>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} >
-                            <Button onClick={() => {
-                                requestRoutes(quotes, currentRoute!.current - 1, currentRoute, setRoute)
-                            }}>-</Button>
-                        </Grid>
-                        <Grid item xs={6} >
-                            <Button onClick={() => {
-                                requestRoutes(quotes, currentRoute!.current + 1, currentRoute, setRoute)
-                            }}>+</Button>
-                        </Grid>
+                    <Divider />
+                    <Box sx={{ height: '80vh', overflowY: 'auto', overflowX: 'hidden' }}>
                         <CurrentTimeline route={route} />
-                    </Grid>
+                    </Box>
+
+                    <MobileNavigationButton toMap={true} />
+
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item lg={9} xs={12}>
                     <MapContainer route={route} />
                 </Grid>
             </Grid>
-            {/* <Timetable route={route}/> */}
-        </Box>
+        </Box >
     )
 }
 

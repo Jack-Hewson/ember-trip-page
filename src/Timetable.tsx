@@ -13,9 +13,6 @@ const Timetable = (route: any) => {
 
     useEffect(() => {
         if (route && route.route) {
-            console.log(route)
-            console.log(route.route)
-            console.log(route.route.route)
             setStops(route.route.route.map((r) => {
                 return r.location.name;
             }))

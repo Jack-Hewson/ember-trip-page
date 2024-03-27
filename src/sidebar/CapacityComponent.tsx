@@ -2,12 +2,13 @@ import { Grid, Stack, Tooltip, Typography } from "@mui/material";
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
+import DesktopTypography from "../commonComponents/DesktopTypography";
 
 const CapacityComponent = (availability) => {
     return (
         <Stack>
             <Stack direction="row" spacing={2}>
-                <Typography>Capacity:</Typography>
+                <DesktopTypography text="Capacity" />
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
                         <Tooltip title="Wheelchair Capacity">
