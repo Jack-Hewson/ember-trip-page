@@ -2,7 +2,9 @@ import mapboxgl from "mapbox-gl";
 import "./map.css"
 import { getGapInMinutes } from "../TimeHelper";
 
-export const addRouteLineLayer = (map: mapboxgl.Map, route: any) => {
+export const addRouteLineLayer = (map: mapboxgl.Map, routeData: any) => {
+    // Displays the route line, for this demo I haven't bothered loading
+    // a new line every time we receive route as it's the same route
     if (map?.getLayer("route")) return;
 
     map.addSource('route', {
@@ -12,7 +14,7 @@ export const addRouteLineLayer = (map: mapboxgl.Map, route: any) => {
             'properties': {},
             'geometry': {
                 'type': 'LineString',
-                'coordinates': route?.route?.route.map((r) =>
+                'coordinates': routeData?.route?.route.map((r) =>
                     ([r.location.lon, r.location.lat])
                 )
             },
@@ -34,23 +36,23 @@ export const addRouteLineLayer = (map: mapboxgl.Map, route: any) => {
     })
 }
 
-export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, route: any) => {
+export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) => {
     const geojson = {
         'type': 'FeatureCollection',
         'features': [{
             'type': 'Feature',
             'properties': {
-                "rotation": route?.route.vehicle.gps.heading,
-                'description': `<b>Bus location</b> </br> Last updated: ${getGapInMinutes(new Date(route?.route?.vehicle.gps.last_updated))}`
+                "rotation": routeData?.route.vehicle.gps.heading,
+                'description': `<b>Bus location</b> </br> Last updated: ${getGapInMinutes(new Date(routeData?.route?.vehicle.gps.last_updated))}`
             },
             'geometry': {
                 'type': 'Point',
-                'coordinates': [route?.route.vehicle.gps.longitude, route?.route.vehicle.gps.latitude]
+                'coordinates': [routeData?.route.vehicle.gps.longitude, routeData?.route.vehicle.gps.latitude]
             }
         }]
     }
 
-
+    // if there already is a liveBus Source, update the data to show the latest position and heading
     if (map.getSource('liveBus')) {
         map.getSource('liveBus').setData(geojson);
         return;
@@ -111,14 +113,14 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, route: any) => {
     });
 }
 
-export const addRouteMarkerLayer = (map: mapboxgl.Map, route: any) => {
+export const addRouteMarkerLayer = (map: mapboxgl.Map, routeData: any) => {
     if (map.getLayer("places")) return;
 
     map.addSource('places', {
         'type': 'geojson',
         'data': {
             'type': 'FeatureCollection',
-            'features': route?.route?.route.map((r) =>
+            'features': routeData?.route?.route.map((r) =>
             ({
                 'type': 'Feature',
                 'properties': {

@@ -7,7 +7,7 @@ import MobileNavigationButton from "../navigation/MobileNavigationButton";
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoiamhld3NvbiIsImEiOiJjbHU1b2RqMTIwaDNhMmxudjJ4cWk3NGV2In0.73E5eCnVMUhvb2d1nUqOEA';
 
-const MapContainer = (route: any) => {
+const MapContainer = (routeData: any) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const [map, setMap] = useState<mapboxgl.Map | null>(null)
     const lng = -3.64;
@@ -35,12 +35,12 @@ const MapContainer = (route: any) => {
     }, []);
 
     useEffect(() => {
-        if (route?.route?.route && map) {
-            addRouteLineLayer(map, route);
-            addRouteMarkerLayer(map, route);
-            addLiveBusMarkerLayer(map, route);
+        if (routeData?.route?.route && map) {
+            addRouteLineLayer(map, routeData);
+            addRouteMarkerLayer(map, routeData);
+            addLiveBusMarkerLayer(map, routeData);
         }
-    }, [route])
+    }, [routeData])
 
     return (
         <Box sx={{ height: '100%' }}>

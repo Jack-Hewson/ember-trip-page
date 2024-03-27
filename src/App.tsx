@@ -17,27 +17,27 @@ import Divider from '@mui/material/Divider';
 import LoadingSpinner from './commonComponents/LoadingSpinner';
 
 function App() {
-    const [quotes, setQuotes] = useState<any>();
-    const [route, setRoute] = useState<any>();
+    const [quotesData, setQuotesData] = useState<any>();
+    const [routeData, setRouteData] = useState<any>();
     const currentRoute = useRef<number>(null);
 
     useEffect(() => {
-        requestQuotes(setQuotes)
+        requestQuotes(setQuotesData)
     }, []);
 
     useEffect(() => {
-        if (quotes) {
+        if (quotesData) {
             // by default, the timeline displays the route with the nearest starting stop's departure time
-            const nearestTime = calculateNearestTime(quotes)
-            requestRoutes(quotes, nearestTime, currentRoute, setRoute)
+            const nearestTime = calculateNearestTime(quotesData)
+            requestRoutes(quotesData, nearestTime, currentRoute, setRouteData)
 
             // requests the route data every second for live gps location
-            const interval = setInterval(() => requestRoutes(quotes, currentRoute!.current, currentRoute, setRoute), 1000)
+            const interval = setInterval(() => requestRoutes(quotesData, currentRoute!.current, currentRoute, setRouteData), 1000)
             return () => {
                 clearInterval(interval);
             }
         }
-    }, [quotes])
+    }, [quotesData])
 
     return (
         <Box sx={{ width: '100%', flexGrow: 1, overflow: 'hidden' }}>
@@ -55,21 +55,21 @@ function App() {
             <Grid container spacing={2}>
                 <Grid item lg={3} xs={12} sx={{ height: '100%', position: 'relative' }}>
 
-                    {quotes ? // show loading spinner if quotes aren't ready yet
+                    {quotesData ? // show loading spinner if quotes aren't ready yet
                         <Grid container sx={{ padding: '2rem', height: '20vh', position: 'relative', zIndex: 100 }} spacing={0}>
                             <Grid item lg={5} xs={3} >
-                                <RouteDetailsComponent details={quotes?.quotes[currentRoute.current]?.legs[0]} />
+                                <RouteDetailsComponent details={quotesData?.quotes[currentRoute.current]?.legs[0]} />
                             </Grid>
                             <Grid item lg={7} xs={9}  >
                                 <Grid container spacing={2}>
                                     <Grid item lg={12} xs={6} >
-                                        <FacilitiesComponent vehicle={route?.vehicle} />
+                                        <FacilitiesComponent vehicle={routeData?.vehicle} />
                                     </Grid>
                                     <Grid item lg={12} xs={6} >
-                                        <CapacityComponent vehicle={quotes?.quotes[currentRoute.current]?.availability} />
+                                        <CapacityComponent vehicle={quotesData?.quotes[currentRoute.current]?.availability} />
                                     </Grid>
                                     <Grid item xs={5} >
-                                        <StatusComponent description={route?.description} />
+                                        <StatusComponent description={routeData?.description} />
                                     </Grid>
                                     <Grid item xs={7} >
                                         <PurchaseComponent />
@@ -79,10 +79,10 @@ function App() {
                             </Grid>
                             <ButtonGroup fullWidth>
                                 <Grid item xs={6} >
-                                    <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={false} />
+                                    <TimelineButton quotes={quotesData} currentRoute={currentRoute} setRoute={setRouteData} next={false} />
                                 </Grid>
                                 <Grid item xs={6} >
-                                    <TimelineButton quotes={quotes} currentRoute={currentRoute} setRoute={setRoute} next={true} />
+                                    <TimelineButton quotes={quotesData} currentRoute={currentRoute} setRoute={setRouteData} next={true} />
                                 </Grid>
                             </ButtonGroup>
                         </Grid>
@@ -92,14 +92,14 @@ function App() {
 
                     <Divider />
                     <Box sx={{ height: '80vh', overflowY: 'auto', overflowX: 'hidden' }}>
-                        <CurrentTimeline route={route} />
+                        <CurrentTimeline route={routeData} />
                     </Box>
 
                     <MobileNavigationButton toMap={true} />
 
                 </Grid>
                 <Grid item lg={9} xs={12}>
-                    <MapContainer route={route} />
+                    <MapContainer route={routeData} />
                 </Grid>
             </Grid>
         </Box >

@@ -10,8 +10,8 @@ export const convertToTime = (timestamp: string) => {
     return `${hours}:${minutes}:${seconds}`;
 }
 
-export const calculateNearestTime = (quotes: any) => {
-    const allTimes = quotes.quotes.map((quote) => {
+export const calculateNearestTime = (quotesData: any) => {
+    const allTimes = quotesData.quotes.map((quote) => {
         return (quote.legs[0].departure.actual || quote.legs[0].departure.estimated || quote.legs[0].departure.scheduled)
     })
 

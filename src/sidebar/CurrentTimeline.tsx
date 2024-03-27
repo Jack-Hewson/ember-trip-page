@@ -8,9 +8,9 @@ import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import { convertToTime } from '../TimeHelper';
 import { Grid, Stack, Typography } from '@mui/material';
 
-export default function CurrentTimeline(route: any) {
+export default function CurrentTimeline(routeData: any) {
     return (
-        (route?.route?.route.map((stop) =>
+        (routeData?.route?.route.map((stop) =>
             <Timeline position="alternate">
                 <TimelineItem>
                     <TimelineOppositeContent>
