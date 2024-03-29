@@ -58,7 +58,7 @@ function App() {
                     {quotesData ? // show loading spinner if quotes aren't ready yet
                         <Grid container sx={{ padding: '2rem', height: '20vh', position: 'relative', zIndex: 100 }} spacing={0}>
                             <Grid item lg={5} xs={3} >
-                                <RouteDetailsComponent details={quotesData?.quotes[currentRoute.current]?.legs[0]} />
+                                {currentRoute.current && <RouteDetailsComponent details={quotesData.quotes[currentRoute.current].legs[0]} />}
                             </Grid>
                             <Grid item lg={7} xs={9}  >
                                 <Grid container spacing={2}>
@@ -66,7 +66,7 @@ function App() {
                                         <FacilitiesComponent vehicle={routeData?.vehicle} />
                                     </Grid>
                                     <Grid item lg={12} xs={6} >
-                                        <CapacityComponent vehicle={quotesData?.quotes[currentRoute.current]?.availability} />
+                                        {currentRoute.current && <CapacityComponent vehicle={quotesData.quotes[currentRoute.current].availability} />}
                                     </Grid>
                                     <Grid item xs={5} >
                                         <StatusComponent description={routeData?.description} />

@@ -1,6 +1,5 @@
-import mapboxgl from "mapbox-gl";
-
-import { getGapInMinutes } from "../TimeHelper";
+import '@testing-library/jest-dom'
+// import { getGapInMinutes } from "../TimeHelper";
 import { addRouteLineLayer, addLiveBusMarkerLayer, addRouteMarkerLayer } from "./MapHelper";
 
 jest.mock("mapbox-gl");

@@ -11,7 +11,7 @@ export const convertToTime = (timestamp: string) => {
 }
 
 export const calculateNearestTime = (quotesData: any) => {
-    const allTimes = quotesData.quotes.map((quote) => {
+    const allTimes = quotesData.quotes.map((quote: any) => {
         return (quote.legs[0].departure.actual || quote.legs[0].departure.estimated || quote.legs[0].departure.scheduled)
     })
 
@@ -41,7 +41,7 @@ export const getEndTime = () => {
     return new Date(todaysDate.setHours(23, 59, 59)).toISOString();
 }
 
-export const getGapInMinutes = (time) => {
+export const getGapInMinutes = (time: any) => {
     const currentDate = new Date();
     // Calculate the difference in milliseconds between the current date and the target date
     const differenceInMilliseconds = currentDate.getTime() - time.getTime();

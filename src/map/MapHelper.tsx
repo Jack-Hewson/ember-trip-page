@@ -1,4 +1,4 @@
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { GeoJSONSource, LngLatLike } from "mapbox-gl";
 import "./map.css"
 import { getGapInMinutes } from "../TimeHelper";
 
@@ -14,7 +14,7 @@ export const addRouteLineLayer = (map: mapboxgl.Map, routeData: any) => {
             'properties': {},
             'geometry': {
                 'type': 'LineString',
-                'coordinates': routeData?.route?.route.map((r) =>
+                'coordinates': routeData?.route?.route.map((r: any) =>
                     ([r.location.lon, r.location.lat])
                 )
             },
@@ -54,7 +54,7 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) =
 
     // if there already is a liveBus Source, update the data to show the latest position and heading
     if (map.getSource('liveBus')) {
-        map.getSource('liveBus').setData(geojson);
+        (map.getSource('liveBus') as GeoJSONSource).setData(geojson);
         return;
     }
 
@@ -64,7 +64,7 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) =
             if (error) throw error;
 
             // Add the image to the map style.
-            map.addImage('busImage', image);
+            map.addImage('busImage', image!);
 
             map.addSource('liveBus', {
                 'type': 'geojson',
@@ -90,21 +90,23 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) =
     map.on('mouseenter', 'liveBus', (e) => {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = 'pointer';
+        if (e.features![0].geometry.type === 'Point') {
+            // Copy coordinates array.
+            const coordinates = e!.features![0].geometry.coordinates.slice();
+            const description = e!.features![0].properties!.description;
 
-        // Copy coordinates array.
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = e.features[0].properties.description;
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
 
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(coordinates as LngLatLike).setHTML(description).addTo(map);
         }
 
-        // Populate the popup and set its coordinates
-        // based on the feature found.
-        popup.setLngLat(coordinates).setHTML(description).addTo(map);
     });
 
     map.on('mouseleave', 'liveBus', () => {
@@ -120,7 +122,7 @@ export const addRouteMarkerLayer = (map: mapboxgl.Map, routeData: any) => {
         'type': 'geojson',
         'data': {
             'type': 'FeatureCollection',
-            'features': routeData?.route?.route.map((r) =>
+            'features': routeData?.route?.route.map((r: any) =>
             ({
                 'type': 'Feature',
                 'properties': {
@@ -154,21 +156,24 @@ export const addRouteMarkerLayer = (map: mapboxgl.Map, routeData: any) => {
     map.on('mouseenter', 'places', (e) => {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = 'pointer';
+        if (e.features![0].geometry.type === 'Point') {
 
-        // Copy coordinates array.
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const description = e.features[0].properties.description;
+            // Copy coordinates array.
+            const coordinates = e.features![0].geometry.coordinates.slice();
+            const description = e.features![0].properties!.description;
 
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(coordinates as LngLatLike).setHTML(description).addTo(map);
         }
 
-        // Populate the popup and set its coordinates
-        // based on the feature found.
-        popup.setLngLat(coordinates).setHTML(description).addTo(map);
     });
 
     map.on('mouseleave', 'places', () => {

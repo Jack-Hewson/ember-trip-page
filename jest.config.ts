@@ -5,6 +5,6 @@ export default {
         "^.+\\.tsx?$" : "ts-jest"
     },
     moduleNameMapper: {
-        '\\.(gif|ttf|eot|svg|png)$': 'src/test/__mocks__/fileMock.js',
+        '\\..\(gif|ttf|eot|svg|png|css)$': 'src/test/__mocks__/fileMock.js'
     }
 }

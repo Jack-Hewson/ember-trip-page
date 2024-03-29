@@ -3,12 +3,13 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-"scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "preview": "vite preview",
+        "test": "jest"
+    },
     "dependencies": {
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.0",
@@ -28,6 +29,7 @@
         "@babel/preset-react": "^7.24.1",
         "@babel/preset-typescript": "^7.24.1",
         "@testing-library/jest-dom": "^6.4.2",
+        "@testing-library/react": "^14.2.2",
         "@types/jest": "^29.5.12",
         "@types/mapbox-gl": "^3.1.0",
         "@types/react": "^18.2.66",
