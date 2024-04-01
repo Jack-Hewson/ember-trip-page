@@ -31,8 +31,8 @@ function App() {
             const nearestTime = calculateNearestTime(quotesData)
             requestRoutes(quotesData, nearestTime, currentRoute, setRouteData)
 
-            // requests the route data every second for live gps location
-            const interval = setInterval(() => requestRoutes(quotesData, currentRoute!.current, currentRoute, setRouteData), 1000)
+            // requests the route data every 10 seconds for live gps location
+            const interval = setInterval(() => requestRoutes(quotesData, currentRoute!.current, currentRoute, setRouteData), 10000)
             return () => {
                 clearInterval(interval);
             }

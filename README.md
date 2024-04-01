@@ -1,3 +1,14 @@
+# Jack's Ember Demo
+
+To start: 'npm run dev'
+
+This demo demonstrates a map interface showing the E1 (Dundee to Edinburgh) Ember bus route
+The map is updated every 10 seconds to reflect the bus' location and information such as the capacity and facilities
+
+Users can switch between the different buses running this route by selecting "previous" and "next"
+
+Thank you for exploring my demo!
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

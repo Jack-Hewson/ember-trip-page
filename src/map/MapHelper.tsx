@@ -1,6 +1,7 @@
 import mapboxgl, { GeoJSONSource, LngLatLike } from "mapbox-gl";
 import "./map.css"
 import { getGapInMinutes } from "../TimeHelper";
+import { FeatureCollection, Point } from 'geojson';
 
 export const addRouteLineLayer = (map: mapboxgl.Map, routeData: any) => {
     // Displays the route line, for this demo I haven't bothered loading
@@ -37,21 +38,22 @@ export const addRouteLineLayer = (map: mapboxgl.Map, routeData: any) => {
 }
 
 export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) => {
-    const geojson = {
-        'type': 'FeatureCollection',
-        'features': [{
-            'type': 'Feature',
-            'properties': {
-                "rotation": routeData?.route.vehicle.gps.heading,
-                'description': `<b>Bus location</b> </br> Last updated: ${getGapInMinutes(new Date(routeData?.route?.vehicle.gps.last_updated))}`
+
+    const geojson: FeatureCollection<Point, { rotation?: number; description: string }> = {
+        type: 'FeatureCollection',
+        features: [{
+            type: 'Feature',
+            properties: {
+                rotation: routeData?.route.vehicle.gps.heading,
+                description: `<b>Bus location</b> </br> Last updated: ${getGapInMinutes(new Date(routeData?.route?.vehicle.gps.last_updated))}`
             },
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [routeData?.route.vehicle.gps.longitude, routeData?.route.vehicle.gps.latitude]
+            geometry: {
+                type: 'Point',
+                coordinates: [routeData?.route.vehicle.gps.longitude, routeData?.route.vehicle.gps.latitude]
             }
         }]
-    }
-
+    };
+    
     // if there already is a liveBus Source, update the data to show the latest position and heading
     if (map.getSource('liveBus')) {
         (map.getSource('liveBus') as GeoJSONSource).setData(geojson);
@@ -67,8 +69,8 @@ export const addLiveBusMarkerLayer = async (map: mapboxgl.Map, routeData: any) =
             map.addImage('busImage', image!);
 
             map.addSource('liveBus', {
-                'type': 'geojson',
-                'data': geojson
+                type: 'geojson',
+                data: geojson
             });
             map.addLayer({
                 'id': 'liveBus',

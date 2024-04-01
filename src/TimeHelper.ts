@@ -1,4 +1,4 @@
-export const convertToTime = (timestamp: string) => {
+export const convertToTime = (timestamp: string): string => {
     const date = new Date(timestamp);
 
     // Extracting hours, minutes, and seconds
@@ -10,7 +10,7 @@ export const convertToTime = (timestamp: string) => {
     return `${hours}:${minutes}:${seconds}`;
 }
 
-export const calculateNearestTime = (quotesData: any) => {
+export const calculateNearestTime = (quotesData: any): number => {
     const allTimes = quotesData.quotes.map((quote: any) => {
         return (quote.legs[0].departure.actual || quote.legs[0].departure.estimated || quote.legs[0].departure.scheduled)
     })
@@ -31,21 +31,20 @@ export const calculateNearestTime = (quotesData: any) => {
     return nearestIndex;
 }
 
-export const getStartTime = () => {
+export const getStartTime = (): string => {
     const todaysDate = new Date()
     return new Date(todaysDate.setHours(0, 0, 0)).toISOString();
 }
 
-export const getEndTime = () => {
+export const getEndTime = (): string => {
     const todaysDate = new Date()
     return new Date(todaysDate.setHours(23, 59, 59)).toISOString();
 }
 
-export const getGapInMinutes = (time: any) => {
-    const currentDate = new Date();
+export const getGapInMinutes = (time: Date): string => {
     // Calculate the difference in milliseconds between the current date and the target date
-    const differenceInMilliseconds = currentDate.getTime() - time.getTime();
+    const differenceInMilliseconds = new Date().getTime() - time.getTime();
     // Convert milliseconds to minutes
     const minutes = Math.floor(differenceInMilliseconds / (1000 * 60))
-    return `${minutes === 0 ? 'Just now' : minutes + ' minute/s ago'}`;
+    return `${minutes <= 0 ? 'Just now' : minutes + ' minute/s ago'}`;
 }
